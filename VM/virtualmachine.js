@@ -76,7 +76,7 @@ module.exports.generateRandomOpTable = function generateRandomOpTable() {
     }
 }
 
-module.exports.buildVirtualMachine = function buildVirtualMachine(optable) {
+function buildVirtualMachine(optable) {
     let base = vmrun.toString()
     if (optable === undefined)
         optable = OpCodes
@@ -101,12 +101,14 @@ module.exports.buildVirtualMachine = function buildVirtualMachine(optable) {
     let code = helper + base;
     return `let vmrun = (function(){${code};return vmrun;})();`;
 }
+module.exports.buildVirtualMachine = buildVirtualMachine
 
-module.exports.buildJS = function buildJS(middle, optable) {
+function buildJS(middle, optable) {
     let code = `vmrun(${middle.data.toString(optable)},${middle.nonlocal})` +
         `/*${ JSON.stringify(middle.data, null, 4) }*/`
     return code
 }
+module.exports.buildJS = buildJS
 
 module.exports.buildvmjs = function (middle, optable) {
     let code = buildVirtualMachine(optable) + buildJS(middle, optable)
