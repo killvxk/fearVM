@@ -1105,8 +1105,8 @@ module.exports.GenCode = function (ast, options) {
     };
 
     let $ = function (node, expecting, ...args) {
-        if (node === null)
-            throw "Node is null";
+        if (node === undefined)
+            throw "Node is undefined";
 
         if (!node || !node.TYPE || !handler[node.TYPE])
             throw Exception(node, "Unspport node :" + node.TYPE);

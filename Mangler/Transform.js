@@ -68,8 +68,10 @@ function code2ast(code) {
     return res.ast
 }
 
-function code2vmast(code) {
-    let res = Terser.minify("(" + code + ")", {
+function code2vmast(code, brackets = false) {
+    if(brackets)
+        code = "(" + code + ")";
+    let res = Terser.minify(code, {
         compress: false,
         output: {
             ast: true,
@@ -233,8 +235,9 @@ let Transformers = {
             if (comment.value.trim() == "VM_END")
             {
                 let part = jsscript.slice(startPos, comment.endpos);
-                let middle = VMC.GenCode(code2vmast(part), {
-                    bRValue: VMStatus !== "VM_S"
+                let bRValue = VMStatus !== "VM_S";
+                let middle = VMC.GenCode(code2vmast(part, bRValue), {
+                    bRValue: bRValue
                 })
                 markReplace.push({
                     start: startPos,
