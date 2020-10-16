@@ -484,6 +484,12 @@ module.exports.GenCode = function (ast, options) {
             definitions.forEach(entry => $(entry, $.S))
             return new $.S();
         },
+        "Const": function ({
+            definitions
+        }) {
+            definitions.forEach(entry => $(entry, $.S))
+            return new $.S();
+        },
         "VarDef": function ({
             name,
             value
