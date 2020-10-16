@@ -15,7 +15,7 @@ let Expandable = function Expandable(value) {
     this._value = value;
 }
 
-let VMFunction = function VMFunction(type, target) {
+let VMFunction = function VMFunction(type, target, bcopythis = false) {
     /* OPRELCALL HERE */
     let local = {
         _stack: [...stack],
@@ -25,9 +25,17 @@ let VMFunction = function VMFunction(type, target) {
     let entrance = ops.length;
 
     return function (...args) {
-        local._stack.push(args)
-        local._stack.push([type, target])
-        return vmrun(local.ops, _global, entrance, local._stack, local.SP, undefined)
+        let _stack = [...local._stack]
+        let _sp = [...local.SP]
+        _stack.push(args)
+        _stack.push([type, target])
+        let outthis = {};
+        let result = vmrun(local.ops, _global, entrance, _stack, _sp, undefined, bcopythis ? outthis : undefined)
+        if(bcopythis)
+        {
+            Object.assign(this, outthis)
+        }
+        return result;
     }
 }
 
@@ -71,6 +79,11 @@ let optable = {
     HALT: function () {
         let result = extractVar(stack.pop());
         let len = SP.pop()
+        if(outthis)
+        {
+            let innerthis = stack[len].a[0];
+            Object.assign(outthis, innerthis)
+        }
         stack.length = len;
         ip = stack.pop()
         stack.push(result)
@@ -411,7 +424,7 @@ let optable = {
         stack.push(A instanceof B)
     },
     FUNCTION: function (address) {
-        stack.push(VMFunction(0, address))
+        stack.push(VMFunction(0, address, true))
     },
     ARROWFUNCTION: function (address) {
         stack.push(VMFunction(1, address))

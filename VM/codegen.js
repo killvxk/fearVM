@@ -243,6 +243,7 @@ module.exports.GenCode = function (ast, options) {
             body.forEach(entry => $(entry, except))
 
             scope.leave()
+            opcode.UNDEFINED();
             opcode.HALT()
         },
         getvar: function (name) {
@@ -344,7 +345,7 @@ module.exports.GenCode = function (ast, options) {
         "Return": function ({
             value
         }) {
-            if (value === undefined) {
+            if (value === null) {
                 opcode.UNDEFINED();
             } else {
                 $(value, $.R);

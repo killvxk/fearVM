@@ -7,7 +7,7 @@ const {
 const CodeGen = require('./codegen')
 const VMBuilder = require('./virtualmachine')
 
-module.exports.Transformer = function(src){
+module.exports.Transformer = function(src, optable, debugMode = true){
     let res = Terser.minify(src, {
         compress: {
             defaults: false,
@@ -27,9 +27,9 @@ module.exports.Transformer = function(src){
 
     let middle = CodeGen.GenCode(AST, {})
 
-    let vmscript = VMBuilder.buildvmjs(middle)
+    let vmscript = VMBuilder.buildvmjs(middle, optable)
     let minifiedVMres = Terser.minify(vmscript, {
-        mangle: {
+        mangle: debugMode ? false : {
             toplevel: true,
             properties: {
                 keep_quoted: true,
@@ -37,8 +37,10 @@ module.exports.Transformer = function(src){
             },
             reserved: ["vmrun"],
         },
+        compress: !debugMode,
         output: {
-            beautify: false,
+            beautify: debugMode,
+            comments: debugMode,
         }
     });
     let minifiedVM = minifiedVMres.code

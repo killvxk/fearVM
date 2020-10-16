@@ -1,7 +1,7 @@
 const OpCodes = require('./opcodes')
 const Terser = require('terser')
 
-function vmrun(ops, _global, ip, stack, SP, exceptions) {
+function vmrun(ops, _global, ip, stack, SP, exceptions, outthis) {
     if (SP === undefined)
         SP = [-1];
     if (ip === undefined)
